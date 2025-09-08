@@ -8,10 +8,10 @@ const Terms = () => {
           <h1>Terms of Service</h1>
           
           <h2>1. Acceptance of Terms</h2>
-          <p>By accessing and using CarRentPro's car rental services, you accept and agree to be bound by the terms and provision of this agreement.</p>
+          <p>By accessing and using CHALYATI's car rental services, you accept and agree to be bound by the terms and provision of this agreement.</p>
           
           <h2>2. Service Description</h2>
-          <p>CarRentPro provides car rental services through our online platform. We offer a variety of vehicles for short-term and long-term rental periods.</p>
+          <p>CHALYATI provides car rental services through our online platform. We offer a variety of vehicles for short-term and long-term rental periods.</p>
           
           <h2>3. User Eligibility</h2>
           <p>You must be at least 21 years old and possess a valid driver's license to rent vehicles through our service. International drivers must have an International Driving Permit.</p>
@@ -47,7 +47,7 @@ const Terms = () => {
           <p>We collect and process personal information in accordance with our Privacy Policy. By using our service, you consent to such processing.</p>
           
           <h2>14. Limitation of Liability</h2>
-          <p>CarRentPro's liability is limited to the rental charges paid. We are not liable for indirect, incidental, or consequential damages.</p>
+          <p>CHALYATI's liability is limited to the rental charges paid. We are not liable for indirect, incidental, or consequential damages.</p>
           
           <h2>15. Governing Law</h2>
           <p>These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in Mumbai, Maharashtra.</p>
@@ -56,7 +56,7 @@ const Terms = () => {
           <p>We reserve the right to modify these terms at any time. Continued use of our service after changes constitutes acceptance of the new terms.</p>
           
           <h2>17. Contact Information</h2>
-          <p>For questions about these terms, please contact us at legal@carrentpro.com or call +91 98765 43210.</p>
+          <p>For questions about these terms, please contact us at legal@chalyati.com or call +91 98765 43210.</p>
           
           <p><strong>Last updated:</strong> December 2024</p>
         </div>

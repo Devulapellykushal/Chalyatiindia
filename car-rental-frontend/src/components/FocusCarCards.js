@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCarImageUrl } from '../utils/imageUtils';
 
 export const FocusCarCard = React.memo(
   ({
@@ -9,7 +10,8 @@ export const FocusCarCard = React.memo(
     setHovered,
   }) => {
     const { id, title, brand, type, transmission, fuel, pricePerDay, seats, mileageKm, images, featured, description } = car;
-    const imageUrl = images && images.length > 0 ? images[0] : '/img/placeholder.jpg';
+    
+    const imageUrl = getCarImageUrl(images && images.length > 0 ? images[0] : null);
     const navigate = useNavigate();
 
     const handleViewDetails = (e) => {
@@ -30,6 +32,7 @@ export const FocusCarCard = React.memo(
           alt={title}
           className="focus-car-image"
           onError={(e) => {
+            console.warn(`Failed to load image for ${title}`);
             e.target.src = '/img/placeholder.jpg';
           }}
         />
@@ -61,7 +64,7 @@ export const FocusCarCard = React.memo(
           <div className="focus-car-actions">
             <div className="focus-car-price">
               <span className="focus-car-price-amount">₹{pricePerDay}</span>
-              <span className="focus-car-price-unit">/day</span>
+              <span className="focus-car-price-unit">/month</span>
             </div>
             <button 
               onClick={handleViewDetails}
@@ -81,17 +84,32 @@ FocusCarCard.displayName = 'FocusCarCard';
 export function FocusCarCards({ cars }) {
   const [hovered, setHovered] = useState(null);
 
+  console.log('FocusCarCards received cars:', cars?.length, cars);
+
   return (
     <div className="focus-cards-grid">
-      {cars.map((car, index) => (
-        <FocusCarCard
-          key={car.id}
-          car={car}
-          index={index}
-          hovered={hovered}
-          setHovered={setHovered}
-        />
-      ))}
+      {cars && cars.length > 0 ? (
+        cars.map((car, index) => (
+          <FocusCarCard
+            key={car.id}
+            car={car}
+            index={index}
+            hovered={hovered}
+            setHovered={setHovered}
+          />
+        ))
+      ) : (
+        <div style={{ 
+          gridColumn: '1 / -1', 
+          textAlign: 'center', 
+          padding: '2rem',
+          color: 'white',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '8px'
+        }}>
+          No cars available or cars data is empty
+        </div>
+      )}
     </div>
   );
 }

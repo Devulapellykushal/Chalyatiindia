@@ -50,10 +50,10 @@ const Privacy = () => {
           <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new policy on our website and updating the effective date.</p>
           
           <h2>15. Contact Us</h2>
-          <p>If you have questions about this Privacy Policy or our data practices, please contact us at privacy@carrentpro.com or call +91 98765 43210.</p>
+          <p>If you have questions about this Privacy Policy or our data practices, please contact us at privacy@chalyati.com or call +91 98765 43210.</p>
           
           <h2>16. Data Protection Officer</h2>
-          <p>For data protection inquiries, you may contact our Data Protection Officer at dpo@carrentpro.com.</p>
+          <p>For data protection inquiries, you may contact our Data Protection Officer at dpo@chalyati.com.</p>
           
           <p><strong>Last updated:</strong> December 2024</p>
         </div>

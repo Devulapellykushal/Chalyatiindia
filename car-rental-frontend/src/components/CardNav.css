@@ -13,10 +13,10 @@
   display: block;
   height: 60px;
   padding: 0;
-  background-color: #000000;
+  background-color: white;
   border: 0.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
   will-change: height;
@@ -53,7 +53,10 @@
   width: 30px;
   height: 2px;
   background-color: currentColor;
-  transition: transform 0.25s ease, opacity 0.2s ease, margin 0.3s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease,
+    margin 0.3s ease;
   transform-origin: 50% 50%;
 }
 
@@ -72,25 +75,26 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  padding: 8px;
+  border-radius: 4px;
 }
 
-.logo-link {
-  text-decoration: none;
-  color: inherit;
+.logo-container:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  opacity: 0.8;
 }
 
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffffff, #cccccc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
 }
 
 .card-nav-cta-button {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #111;
+  color: white;
   border: none;
   border-radius: calc(0.75rem - 0.35rem);
   padding: 0 1rem;
@@ -98,14 +102,10 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .card-nav-cta-button:hover {
-  background-color: #e6e6e6;
+  background-color: #333;
 }
 
 .card-nav-content {
@@ -162,20 +162,10 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: inherit;
 }
 
 .nav-card-link:hover {
   opacity: 0.75;
-}
-
-.nav-card-link-icon {
-  font-size: 14px;
-  transition: transform 0.2s ease;
-}
-
-.nav-card-link:hover .nav-card-link-icon {
-  transform: translateX(2px);
 }
 
 @media (max-width: 768px) {
@@ -197,6 +187,15 @@
     position: static;
     transform: none;
     order: 1;
+    padding: 4px;
+  }
+
+  .logo-container:hover {
+    transform: scale(1.05);
+  }
+
+  .logo {
+    height: 32px;
   }
 
   .card-nav-cta-button {

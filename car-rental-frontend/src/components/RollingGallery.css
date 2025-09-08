@@ -1,0 +1,109 @@
+.gallery-container {
+  position: relative;
+  height: 600px; /* Increased height */
+  width: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+.gallery-gradient {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 80px; /* Increased gradient width */
+  z-index: 10;
+}
+
+.gallery-gradient-left {
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.gallery-gradient-right {
+  right: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.gallery-content {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px; /* Increased perspective for better 3D effect */
+  transform-style: preserve-3d;
+}
+
+.gallery-track {
+  display: flex;
+  height: auto;
+  min-height: 300px; /* Increased min height */
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  transform-style: preserve-3d;
+  width: 100%;
+}
+
+.gallery-item {
+  position: absolute;
+  display: flex;
+  height: fit-content;
+  align-items: center;
+  justify-content: center;
+  padding: 0; /* Remove padding to prevent overlap */
+  backface-visibility: hidden;
+  transform-origin: center center;
+  margin: 0; /* Remove margin, spacing handled by transform */
+}
+
+.gallery-img {
+  pointer-events: none;
+  height: 140px; /* Reduced height for more compact cards */
+  width: 250px; /* Reduced width for better proportions */
+  border-radius: 16px; /* Slightly reduced border radius */
+  border: 3px solid #fff; /* Reduced border width */
+  object-fit: cover;
+  transition: 0.3s ease;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3); /* Reduced shadow for smaller cards */
+}
+
+.gallery-item:hover .gallery-img {
+  transform: scale(1.08); /* Slightly increased hover scale */
+  transition: 0.3s ease;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); /* Enhanced shadow on hover */
+}
+
+@media (max-width: 768px) {
+  .gallery-container {
+    height: 500px;
+  }
+  
+  .gallery-item {
+    padding: 0;
+    margin: 0; /* Remove margin for consistent spacing */
+  }
+  
+  .gallery-img {
+    height: 110px;
+    width: 200px;
+  }
+  
+  .gallery-gradient {
+    width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-container {
+    height: 450px;
+  }
+  
+  .gallery-item {
+    margin: 0; /* Remove margin for consistent spacing */
+  }
+  
+  .gallery-img {
+    height: 100px;
+    width: 180px;
+  }
+}

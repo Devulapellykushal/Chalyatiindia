@@ -64,7 +64,7 @@ const Refund = () => {
           <h2>16. Contact Information</h2>
           <p>For refund inquiries and requests, please contact our customer service team:</p>
           <p><strong>Phone:</strong> +91 98765 43210<br />
-          <strong>Email:</strong> refunds@carrentpro.com<br />
+          <strong>Email:</strong> refunds@chalyati.com<br />
           <strong>Hours:</strong> Monday - Friday, 9:00 AM - 7:00 PM IST</p>
           
           <p><strong>Last updated:</strong> December 2024</p>

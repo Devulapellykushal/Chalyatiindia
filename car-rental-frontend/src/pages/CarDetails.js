@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCars } from '../state/CarsContext';
+import { processCarImages } from '../utils/imageUtils';
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -17,6 +18,11 @@ const CarDetails = () => {
 
   const car = cars.find(c => c.id === id);
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [id]);
+
   if (!car) {
     return (
       <div className="main">
@@ -31,8 +37,9 @@ const CarDetails = () => {
   }
 
   const { title, brand, type, transmission, fuel, pricePerDay, seats, mileageKm, images, featured, description } = car;
-  const imageUrls = images && images.length > 0 ? images : ['/img/placeholder.jpg'];
-  const currentImage = imageUrls[selectedImageIndex] || '/img/placeholder.jpg';
+  
+  const imageUrls = processCarImages(images);
+  // const currentImage = imageUrls[selectedImageIndex] || '/img/placeholder.svg'; // Currently unused
 
   const handleEnquirySubmit = (e) => {
     e.preventDefault();
@@ -54,36 +61,83 @@ const CarDetails = () => {
     });
   };
 
-  const whatsappMessage = `Hi, I want to enquire about ${title}`;
-  const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappMessage = `Hi, I want to enquire about renting this car:
+
+🚗 *${title}*
+🏷️ Brand: ${brand}
+🔧 Type: ${type}
+⚙️ Transmission: ${transmission}
+⛽ Fuel: ${fuel}
+💺 Seats: ${seats}
+📏 Mileage: ${mileageKm.toLocaleString()} km
+💰 Price: ₹${pricePerDay}/month
+
+Could you please provide more details about availability and booking process?`;
+  const whatsappUrl = `https://wa.me/918099662446?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className="main">
       <div className="container">
         <div className="car-details">
-          {/* Gallery */}
-          <div className="car-gallery">
-            <img
-              src={currentImage}
-              alt={title}
-              className="main-image"
-              onError={(e) => {
-                e.target.src = '/img/placeholder.jpg';
-              }}
-            />
-            
-            {imageUrls.length > 1 && (
-              <div className="thumbnail-grid">
+          {/* Image Carousel */}
+          <div className="car-carousel">
+            <div className="carousel-container">
+              <div className="carousel-track" style={{ transform: `translateX(-${selectedImageIndex * 100}%)` }}>
                 {imageUrls.map((image, index) => (
-                  <img
+                  <div key={index} className="carousel-slide">
+                    <img
+                      src={image}
+                      alt={`${title} ${index + 1}`}
+                      className="carousel-image"
+                      onError={(e) => {
+                        e.target.src = '/img/placeholder.jpg';
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Navigation Arrows - Show when multiple images */}
+              {imageUrls.length > 1 && (
+                <>
+                  <button 
+                    className="carousel-arrow carousel-arrow-left"
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === 0 ? imageUrls.length - 1 : prev - 1
+                    )}
+                    aria-label="Previous image"
+                  >
+                    ‹
+                  </button>
+                  <button 
+                    className="carousel-arrow carousel-arrow-right"
+                    onClick={() => setSelectedImageIndex(prev => 
+                      prev === imageUrls.length - 1 ? 0 : prev + 1
+                    )}
+                    aria-label="Next image"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+              
+              {/* Single Image Indicator */}
+              {imageUrls.length === 1 && (
+                <div className="single-image-indicator">
+                  <span>📸 More images coming soon!</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Carousel Indicators - Show when multiple images */}
+            {imageUrls.length > 1 && (
+              <div className="carousel-indicators">
+                {imageUrls.map((_, index) => (
+                  <button
                     key={index}
-                    src={image}
-                    alt={`${title} ${index + 1}`}
-                    className={`thumbnail ${index === selectedImageIndex ? 'active' : ''}`}
+                    className={`carousel-indicator ${index === selectedImageIndex ? 'active' : ''}`}
                     onClick={() => setSelectedImageIndex(index)}
-                    onError={(e) => {
-                      e.target.src = '/img/placeholder.jpg';
-                    }}
+                    aria-label={`Go to image ${index + 1}`}
                   />
                 ))}
               </div>
@@ -97,7 +151,7 @@ const CarDetails = () => {
                 <h1>{title}</h1>
                 {featured && <span className="featured-badge">Featured</span>}
               </div>
-              <div className="car-price">₹{pricePerDay}/day</div>
+              <div className="car-price">₹{pricePerDay}/month</div>
             </div>
 
             <div className="car-specs-grid">
