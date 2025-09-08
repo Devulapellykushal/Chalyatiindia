@@ -5,10 +5,12 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const path = require('path');
-const config = require('./config');
 
-// Load environment variables
+// Load environment variables FIRST
 dotenv.config();
+
+// Then require config
+const config = require('./config');
 
 const app = express();
 const PORT = config.PORT;
@@ -40,29 +42,50 @@ app.use(helmet({
 app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // CORS Configuration
+const getAllowedOrigins = () => {
+  const origins = [config.CORS_ORIGIN];
+  
+  // Add development origins only in development mode
+  if (config.NODE_ENV === 'development') {
+    origins.push(
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001'
+    );
+  }
+  
+  // Add production origins
+  if (config.NODE_ENV === 'production') {
+    origins.push(
+      'https://chalyati.com',
+      'https://www.chalyati.com',
+      'https://app.chalyati.com'
+    );
+  }
+  
+  return origins;
+};
+
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      config.CORS_ORIGIN,
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://chalyati.com',
-      'https://www.chalyati.com'
-    ];
+    const allowedOrigins = getAllowedOrigins();
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.warn(`🚫 CORS blocked request from origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cache-Control'],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
+  optionsSuccessStatus: 200
 }));
 
 // Body parsing with limits

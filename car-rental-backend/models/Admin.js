@@ -174,16 +174,23 @@ adminSchema.methods.hasPermission = function(permission) {
 // Static method to create default admin
 adminSchema.statics.createDefaultAdmin = async function() {
   try {
-    const existingAdmin = await this.findOne({ username: 'chalyatiindia' });
+    const config = require('../config');
+    
+    // Validate required environment variables
+    if (!config.ADMIN_USERNAME || !config.ADMIN_PASSWORD || !config.ADMIN_EMAIL) {
+      throw new Error('Admin credentials not properly configured in environment variables');
+    }
+
+    const existingAdmin = await this.findOne({ username: config.ADMIN_USERNAME });
     if (existingAdmin) {
       console.log('Default admin already exists');
       return existingAdmin;
     }
 
     const defaultAdmin = new this({
-      username: 'chalyatiindia',
-      email: 'admin@chalyati.com',
-      password: process.env.ADMIN_PASSWORD || 'santoshmetta',
+      username: config.ADMIN_USERNAME,
+      email: config.ADMIN_EMAIL,
+      password: config.ADMIN_PASSWORD,
       role: 'super_admin',
       profile: {
         firstName: 'Chalyati',
@@ -203,10 +210,12 @@ adminSchema.statics.createDefaultAdmin = async function() {
     });
 
     await defaultAdmin.save();
-    console.log('Default admin created successfully');
+    console.log('✅ Default admin created successfully');
+    console.log(`📧 Admin Email: ${config.ADMIN_EMAIL}`);
+    console.log(`👤 Admin Username: ${config.ADMIN_USERNAME}`);
     return defaultAdmin;
   } catch (error) {
-    console.error('Error creating default admin:', error);
+    console.error('❌ Error creating default admin:', error);
     throw error;
   }
 };
