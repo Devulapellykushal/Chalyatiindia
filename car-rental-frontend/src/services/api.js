@@ -279,6 +279,13 @@ class ApiService {
     return response;
   }
 
+  async changeAdminPassword(passwordData) {
+    return this.request('/admin/change-password', {
+      method: 'POST',
+      body: JSON.stringify(passwordData),
+    });
+  }
+
   // Health check
   async healthCheck() {
     return this.request('/health');
