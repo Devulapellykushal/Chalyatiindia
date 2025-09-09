@@ -53,7 +53,7 @@ Thank you!`;
         
                   <div className="footer-bottom">
             <p>&copy; 2024 CHALYATI. All rights reserved.</p>
-            <p>Created with <span style={{color: '#8B5CF6'}}>❤️</span> by <a href="https://www.linkedin.com/in/devulapellykushal/" target="_blank" rel="noopener noreferrer" className="footer-link" style={{color: '#8B5CF6'}}>dev</a></p>
+            <p>Created with <span style={{color: '#8B5CF6'}}>❤️</span> by <a href="https://www.linkedin.com/in/thanvithakariveda" target="_blank" rel="noopener noreferrer" className="footer-link" style={{color: '#8B5CF6'}}>dev</a></p>
           </div>
       </div>
     </footer>

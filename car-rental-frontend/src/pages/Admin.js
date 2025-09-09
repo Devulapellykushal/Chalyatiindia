@@ -33,14 +33,6 @@ const Admin = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
   const [imageInputMode, setImageInputMode] = useState('upload'); // 'upload' or 'url'
-  const [showPasswordChange, setShowPasswordChange] = useState(false);
-  const [passwordData, setPasswordData] = useState({
-    oldPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState('');
 
 
 
@@ -164,69 +156,6 @@ const Admin = () => {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear errors when user starts typing
-    if (passwordError) setPasswordError('');
-  };
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setPasswordError('');
-    setPasswordSuccess('');
-
-    try {
-      // Basic validation
-      if (!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-        setPasswordError('All fields are required');
-        return;
-      }
-
-      if (passwordData.newPassword !== passwordData.confirmPassword) {
-        setPasswordError('New password and confirmation do not match');
-        return;
-      }
-
-      if (passwordData.newPassword.length < 8) {
-        setPasswordError('New password must be at least 8 characters long');
-        return;
-      }
-
-      // Call API to change password
-      const response = await apiService.changeAdminPassword(passwordData);
-      
-      if (response.success) {
-        setPasswordSuccess('Password changed successfully!');
-        setPasswordData({
-          oldPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        });
-        setShowPasswordChange(false);
-        
-        // Clear success message after 3 seconds
-        setTimeout(() => setPasswordSuccess(''), 3000);
-      }
-    } catch (error) {
-      console.error('Password change error:', error);
-      setPasswordError(error.response?.data?.message || 'Failed to change password');
-    }
-  };
-
-  const resetPasswordForm = () => {
-    setPasswordData({
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
-    setPasswordError('');
-    setPasswordSuccess('');
-    setShowPasswordChange(false);
-  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -502,106 +431,11 @@ const Admin = () => {
         />
       )}
 
-      {/* Password Change Modal */}
-      {showPasswordChange && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>Change Password</h2>
-              <button 
-                onClick={resetPasswordForm} 
-                className="modal-close"
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-            
-            <form onSubmit={handlePasswordSubmit} className="password-form">
-              {passwordError && (
-                <div className="error-message">
-                  {passwordError}
-                </div>
-              )}
-              
-              {passwordSuccess && (
-                <div className="success-message">
-                  {passwordSuccess}
-                </div>
-              )}
-
-              <div className="form-group">
-                <label className="form-label">Current Password *</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  name="oldPassword"
-                  value={passwordData.oldPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Enter current password"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">New Password *</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  name="newPassword"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Enter new password"
-                  required
-                />
-                <div className="password-requirements">
-                  <small>Password must be at least 8 characters with uppercase, lowercase, number, and special character</small>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Confirm New Password *</label>
-                <input
-                  type="password"
-                  className="form-input"
-                  name="confirmPassword"
-                  value={passwordData.confirmPassword}
-                  onChange={handlePasswordChange}
-                  placeholder="Confirm new password"
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button 
-                  type="button" 
-                  onClick={resetPasswordForm}
-                  className="btn btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary"
-                >
-                  Change Password
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <div className="admin-header">
         <div className="admin-header-content">
           <img src={navLogo} alt="CHALYATI" className="admin-logo" />
           <div className="admin-header-actions">
-            <button 
-              onClick={() => setShowPasswordChange(true)} 
-              className="btn btn-outline"
-            >
-              Change Password
-            </button>
             <button onClick={handleLogout} className="btn btn-secondary">
               Logout
             </button>
