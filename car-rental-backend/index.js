@@ -67,13 +67,7 @@ const getAllowedOrigins = () => {
   return origins;
 };
 
-app.use(cors({
-  origin: true, // Allow all origins for now
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cache-Control'],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
-  optionsSuccessStatus: 200
-}));
+app.use(cors());
 
 // Body parsing with limits
 app.use(express.json({ 
