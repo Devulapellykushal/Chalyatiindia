@@ -67,7 +67,12 @@ const getAllowedOrigins = () => {
   return origins;
 };
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: false
+}));
 
 // Body parsing with limits
 app.use(express.json({ 
