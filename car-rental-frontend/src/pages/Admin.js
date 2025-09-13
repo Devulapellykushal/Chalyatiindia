@@ -321,7 +321,7 @@ const Admin = () => {
           if (img.startsWith('http')) {
             return img; // Already a full URL
           } else if (img.startsWith('/uploads/')) {
-            return `http://localhost:5000${img}`; // Add backend URL
+            return `https://chalyati.onrender.com${img}`; // Add backend URL
           } else {
             return img; // Keep as is for other cases
           }
@@ -846,7 +846,7 @@ const Admin = () => {
                 ? (firstImage.startsWith('http') 
                     ? firstImage 
                     : firstImage.startsWith('/uploads/') 
-                      ? `http://localhost:5000${firstImage}`
+                      ? `https://chalyati.onrender.com${firstImage}`
                       : firstImage)
                 : '/img/placeholder.svg';
               
