@@ -33,7 +33,7 @@ class ApiService {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
       headers: this.getHeaders(),
-      credentials: 'include', // Include cookies for httpOnly tokens
+      credentials: this.token ? 'include' : 'omit', // Only include credentials for authenticated requests
       ...options,
     };
 
