@@ -9,7 +9,7 @@ export const FocusCarCard = React.memo(
     hovered,
     setHovered,
   }) => {
-    const { id, title, brand, type, transmission, fuel, pricePerDay, seats, mileageKm, images, featured, description } = car;
+    const { id, title, brand, type, transmission, fuel, pricePerDay, seats, images, featured } = car;
     
     const imageUrl = getCarImageUrl(images && images.length > 0 ? images[0] : null);
     const navigate = useNavigate();
@@ -85,6 +85,7 @@ export function FocusCarCards({ cars }) {
   const [hovered, setHovered] = useState(null);
 
   console.log('FocusCarCards received cars:', cars?.length, cars);
+  console.log('FocusCarCards cars array:', cars);
 
   return (
     <div className="focus-cards-grid">

@@ -1,22 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import RollingGallery from "./RollingGallery";
+import { useCars } from "../state/CarsContext";
+import { FocusCarCards } from "./FocusCarCards";
 import Squares from "./Squares";
 
 const FeaturedCarsBlock = () => {
-  // Using local car images from assets
-  const carImages = [
-    '/assets/AUDI Q3 IMAGE.jpeg',
-    '/assets/KWID IMAGE.jpeg',
-    '/assets/SELTOS IMAGE.jpeg',
-    '/assets/MERCEDES C220D IMAGE.jpeg',
-    '/assets/HONDA CITY IMAGE.jpeg',
-    '/assets/BALENO IMAGE.jpeg',
-    '/assets/BREZZA IMAGE.jpeg',
-    '/assets/NEXON IMAGE.jpeg',
-    '/assets/I20 IMAGE.jpeg',
-    '/assets/ALTROZ IMAGE.jpeg'
-  ];
+  const { getFeaturedCars, loading, error, cars } = useCars();
+  const [featuredCars, setFeaturedCars] = useState([]);
+
+  useEffect(() => {
+    const featuredCarsList = getFeaturedCars();
+    console.log('FeaturedCarsBlock - getFeaturedCars returned:', featuredCarsList);
+    setFeaturedCars(featuredCarsList.slice(0, 6)); // Limit to 6 cars
+  }, [cars, getFeaturedCars]);
 
   return (
     <section className="full-viewport featured-cars-section">
@@ -36,13 +32,34 @@ const FeaturedCarsBlock = () => {
           />
         </div>
         
-        {/* Gallery Content */}
+        {/* Featured Cars Content */}
         <div className="gallery-content-overlay">
-          <RollingGallery 
-            autoplay={true} 
-            pauseOnHover={true} 
-            images={carImages}
-          />
+          {loading ? (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              height: '300px',
+              color: 'white',
+              fontSize: '18px'
+            }}>
+              Loading featured cars...
+            </div>
+          ) : error ? (
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              height: '300px',
+              color: 'white',
+              fontSize: '18px',
+              textAlign: 'center'
+            }}>
+              Error loading featured cars: {error}
+            </div>
+          ) : (
+            <FocusCarCards cars={featuredCars} />
+          )}
         </div>
       </div>
 
