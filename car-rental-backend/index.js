@@ -41,37 +41,52 @@ const PORT = config.PORT;
 // Logging
 app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// CORS Configuration
+// CORS Configuration - Production Ready
 const getAllowedOrigins = () => {
-  const origins = [config.CORS_ORIGIN];
+  const origins = [
+    'http://localhost:3000',                    // Development frontend
+    'https://chalyati.com'    // Production frontend (replace with your actual domain)
+  ];
   
-  // Add development origins only in development mode
+  // Add additional development origins if needed
   if (config.NODE_ENV === 'development') {
     origins.push(
-      'http://localhost:3000',
       'http://localhost:3001',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001'
     );
   }
   
-  // Add production origins
-  if (config.NODE_ENV === 'production') {
-    origins.push(
-      'https://chalyati.com',
-      'https://www.chalyati.com',
-      'https://app.chalyati.com'
-    );
-  }
-  
   return origins;
 };
 
+// CORS middleware with credentials support
 app.use(cors({
-  origin: '*',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = getAllowedOrigins();
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`🚫 CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,  // Enable credentials (cookies, authorization headers)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-  credentials: false
+  allowedHeaders: [
+    'Origin', 
+    'X-Requested-With', 
+    'Content-Type', 
+    'Accept', 
+    'Authorization',
+    'Cache-Control',
+    'Pragma'
+  ],
+  exposedHeaders: ['Set-Cookie'], // Expose cookies to frontend
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 }));
 
 // Body parsing with limits
@@ -127,19 +142,27 @@ setTimeout(initializeDefaultAdmin, 2000);
 
 // Handle preflight requests for uploads
 app.options('/uploads/*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', config.FRONTEND_URL || 'http://localhost:3000');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  const origin = req.headers.origin;
+  const allowedOrigins = getAllowedOrigins();
+  
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  }
   res.sendStatus(200);
 });
 
 // Serve uploaded images with CORS headers
 app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', config.FRONTEND_URL || 'http://localhost:3000');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  const origin = req.headers.origin;
+  const allowedOrigins = getAllowedOrigins();
+  
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
   next();
 }, express.static(path.join(__dirname, 'uploads')));
 
