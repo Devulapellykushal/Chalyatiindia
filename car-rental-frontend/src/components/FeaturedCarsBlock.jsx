@@ -2,15 +2,26 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCars } from "../state/CarsContext";
 import { FocusCarCards } from "./FocusCarCards";
+import RollingGallery from "./RollingGallery";
 import Squares from "./Squares";
+import { getCarImageUrl } from "../utils/imageUtils";
 
 const FeaturedCarsBlock = () => {
   const { getFeaturedCars, loading, error, cars } = useCars();
   const [featuredCars, setFeaturedCars] = useState([]);
+  const [carImages, setCarImages] = useState([]);
 
   useEffect(() => {
     const featuredCarsList = getFeaturedCars();
-    setFeaturedCars(featuredCarsList.slice(0, 6)); // Limit to 6 cars
+    const limitedCars = featuredCarsList.slice(0, 6); // Limit to 6 cars
+    setFeaturedCars(limitedCars);
+    
+    // Extract images for rolling gallery
+    const images = limitedCars.map(car => {
+      const imageUrl = getCarImageUrl(car.images && car.images.length > 0 ? car.images[0] : null);
+      return imageUrl;
+    });
+    setCarImages(images);
   }, [cars, getFeaturedCars]);
 
   return (
@@ -57,7 +68,19 @@ const FeaturedCarsBlock = () => {
               Error loading featured cars: {error}
             </div>
           ) : (
-            <FocusCarCards cars={featuredCars} />
+            <>
+              {/* Rolling Gallery with real car images */}
+              <RollingGallery 
+                autoplay={true} 
+                pauseOnHover={true} 
+                images={carImages}
+              />
+              
+              {/* Detailed Car Cards below the gallery */}
+              <div style={{ marginTop: '3rem' }}>
+                <FocusCarCards cars={featuredCars} />
+              </div>
+            </>
           )}
         </div>
       </div>
