@@ -15,28 +15,28 @@ const config = require('./config');
 const app = express();
 const PORT = config.PORT;
 
-// Security Middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}));
+// Security Middleware - Temporarily disabled for debugging
+// app.use(helmet({
+//   crossOriginResourcePolicy: { policy: "cross-origin" },
+//   contentSecurityPolicy: {
+//     directives: {
+//       defaultSrc: ["'self'"],
+//       styleSrc: ["'self'", "'unsafe-inline'"],
+//       scriptSrc: ["'self'"],
+//       imgSrc: ["'self'", "data:", "https:"],
+//       connectSrc: ["'self'"],
+//       fontSrc: ["'self'"],
+//       objectSrc: ["'none'"],
+//       mediaSrc: ["'self'"],
+//       frameSrc: ["'none'"],
+//     },
+//   },
+//   hsts: {
+//     maxAge: 31536000,
+//     includeSubDomains: true,
+//     preload: true
+//   }
+// }));
 
 // Logging
 app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
