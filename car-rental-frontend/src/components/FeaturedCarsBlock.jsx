@@ -10,7 +10,6 @@ const FeaturedCarsBlock = () => {
 
   useEffect(() => {
     const featuredCarsList = getFeaturedCars();
-    console.log('FeaturedCarsBlock - getFeaturedCars returned:', featuredCarsList);
     setFeaturedCars(featuredCarsList.slice(0, 6)); // Limit to 6 cars
   }, [cars, getFeaturedCars]);
 
