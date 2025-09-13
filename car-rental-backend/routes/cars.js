@@ -81,6 +81,8 @@ router.get('/', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching cars:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Request headers:', req.headers);
     res.status(500).json({
       success: false,
       message: 'Failed to fetch cars',
