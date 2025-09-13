@@ -5,6 +5,8 @@ const router = express.Router();
 // GET /api/cars - Get all cars with optional filtering
 router.get('/', async (req, res) => {
   try {
+    console.log('Cars route called with headers:', req.headers);
+    console.log('Cars route called with origin:', req.get('Origin'));
     const {
       page = 1,
       limit = 20,
