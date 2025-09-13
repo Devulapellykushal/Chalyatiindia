@@ -69,7 +69,6 @@ const getAllowedOrigins = () => {
 
 app.use(cors({
   origin: true, // Allow all origins for now
-  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization', 'Cache-Control'],
   exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
