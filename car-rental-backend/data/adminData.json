@@ -1,0 +1,40 @@
+{
+  "admins": [
+    {
+      "id": "admin-1",
+      "username": "chalyatiindia",
+      "email": "corp.comm@chalyati.com",
+      "password": "$2b$10$sqDY7vWpfFZWEfWDrs13PeldT8HNRJKjYlhchXmGIQN29XTNWIncS",
+      "role": "admin",
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-09-13T11:23:01.371Z",
+      "allowedEmails": [
+        "corp.comm@chalyati.com",
+        "admin@chalyati.com",
+        "dev@chalyati.com",
+        "kushal@chalyati.com",
+        "kushalreddyyy@gmail.com"
+      ],
+      
+      "lastLogin": "2025-09-13T11:23:01.370Z"
+    },
+    {
+      "id": "admin-2",
+      "username": "kushal",
+      "email": "kushalreddyyy@gmail.com",
+      "password": "$2b$10$7lT.KWlEtBSwWYe6NYfFKO7oeJNg4gSx5QpYtJQHZvDPDPy7cybAC",
+      "role": "admin",
+      "createdAt": "2025-09-11T16:29:56.682Z",
+      "updatedAt": "2025-09-11T16:30:47.083Z",
+      "allowedEmails": [
+        "kushalreddyyy@gmail.com",
+        "admin@chalyati.com",
+        "dev@chalyati.com",
+        "kushal@chalyati.com"
+      ],
+      "resetPasswordToken": "dba49683656d07083713ed7fa23e0a9e107d466a8c17afb60e8235c4e9912ad3",
+      "resetPasswordExpires": "2025-09-11T16:45:47.083Z",
+      "lastLogin": "2025-09-11T16:30:08.518Z"
+    }
+  ]
+}
