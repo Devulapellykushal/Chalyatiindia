@@ -1,6 +1,22 @@
 {
-  "dependencies": {
-    "gsap": "^3.13.0",
-    "ogl": "^1.0.11"
+  "name": "chalyati",
+  "version": "1.0.0",
+  "description": "CHALYATI Car Rental Application - Full Stack",
+  "main": "car-rental-backend/index.js",
+  "scripts": {
+    "start": "cd car-rental-backend && npm start",
+    "build": "cd car-rental-backend && npm install",
+    "dev": "cd car-rental-backend && npm run dev",
+    "install-backend": "cd car-rental-backend && npm install",
+    "install-frontend": "cd car-rental-frontend && npm install",
+    "build-frontend": "cd car-rental-frontend && npm run build",
+    "postinstall": "cd car-rental-backend && npm install"
+  },
+  "keywords": ["car-rental", "react", "nodejs", "mongodb"],
+  "author": "Devulapellykushal",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
