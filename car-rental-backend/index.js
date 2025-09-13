@@ -45,7 +45,9 @@ app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
 const getAllowedOrigins = () => {
   const origins = [
     'http://localhost:3000',                    // Development frontend
-    'https://chalyati.com'    // Production frontend (replace with your actual domain)
+    'https://chalyati.com',                     // Production frontend domain
+    'https://chalyati.vercel.app',              // Vercel deployment
+    'https://chalyati-jp3xxys77-devulapellykushals-projects.vercel.app'  // Specific Vercel URL
   ];
   
   // Add additional development origins if needed
@@ -67,9 +69,22 @@ app.use(cors({
     if (!origin) return callback(null, true);
     
     const allowedOrigins = getAllowedOrigins();
+    
+    // Check exact matches first
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
-    } else {
+    } 
+    // Allow all Vercel deployments
+    else if (origin.includes('.vercel.app')) {
+      console.log(`✅ CORS allowing Vercel deployment: ${origin}`);
+      callback(null, true);
+    }
+    // Allow localhost for development
+    else if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      console.log(`✅ CORS allowing local development: ${origin}`);
+      callback(null, true);
+    }
+    else {
       console.warn(`🚫 CORS blocked request from origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
