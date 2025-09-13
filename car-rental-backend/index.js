@@ -173,6 +173,10 @@ app.use('*', (req, res) => {
 // Global error handling middleware
 app.use((error, req, res, next) => {
   console.error('Global error handler:', error);
+  console.error('Request URL:', req.url);
+  console.error('Request method:', req.method);
+  console.error('Request headers:', req.headers);
+  console.error('Error stack:', error.stack);
   res.status(500).json({
     success: false,
     message: 'Internal server error',
