@@ -47,6 +47,7 @@ const getAllowedOrigins = () => {
     'http://localhost:3000',                    // Development frontend
     'https://chalyati.com',                     // Production frontend domain
     'https://chalyati.vercel.app',              // Vercel deployment
+    'https://chalyatiindia.onrender.com',       // Render backend (for internal requests)
     'https://chalyati-jp3xxys77-devulapellykushals-projects.vercel.app'  // Specific Vercel URL
   ];
   
