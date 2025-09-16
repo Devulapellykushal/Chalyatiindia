@@ -183,4 +183,4 @@ car-rental-backend/manual-*.js
 car-rental-backend/reset-*.js
 car-rental-backend/setup-*.sh
 car-rental-backend/unlock-*.js
-car-rental-backend/verify-*.js
+car-rental-backend/verify-*.jsnode_modules/
