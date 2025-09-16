@@ -71,7 +71,6 @@ const ComparisonTable = () => {
             <div className="comparison-header">
               <div className="feature-column">Features</div>
               <div className="subscription-column">Chalyati Subscription</div>
-              <div className="buy-column">Buy</div>
             </div>
             
             <div className="comparison-body">
@@ -80,9 +79,6 @@ const ComparisonTable = () => {
                   <div className="feature-cell">{feature}</div>
                   <div className="subscription-cell">
                     <div className="check-icon">✓</div>
-                  </div>
-                  <div className="buy-cell">
-                    <div className="cross-icon">✗</div>
                   </div>
                 </div>
               ))}

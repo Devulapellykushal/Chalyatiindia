@@ -1,36 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useCars } from "../state/CarsContext";
-import { FocusCarCards } from "./FocusCarCards";
+import apiService from "../services/api";
 import RollingGallery from "./RollingGallery";
 import Squares from "./Squares";
-import { getCarImageUrl } from "../utils/imageUtils";
 
 const FeaturedCarsBlock = () => {
-  const { getFeaturedCars, loading, error, cars } = useCars();
-  const [featuredCars, setFeaturedCars] = useState([]);
-  const [carImages, setCarImages] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fallback images if API fails
+  const fallbackImages = [
+    '/assets/AUDI Q3 IMAGE.jpeg',
+    '/assets/KWID IMAGE.jpeg',
+    '/assets/SELTOS IMAGE.jpeg',
+    '/assets/MERCEDES C220D IMAGE.jpeg',
+    '/assets/HONDA CITY IMAGE.jpeg',
+    '/assets/BALENO IMAGE.jpeg',
+    '/assets/BREZZA IMAGE.jpeg',
+    '/assets/NEXON IMAGE.jpeg',
+    '/assets/I20 IMAGE.jpeg',
+    '/assets/ALTROZ IMAGE.jpeg'
+  ];
 
   useEffect(() => {
-    const featuredCarsList = getFeaturedCars();
-    const limitedCars = featuredCarsList.slice(0, 6); // Limit to 6 cars
-    setFeaturedCars(limitedCars);
+    const loadGalleryImages = async () => {
+      try {
+        // Add cache-busting parameter to ensure fresh data
+        const response = await apiService.getGalleryImages('featured');
+        if (response.success && response.data.length > 0) {
+          // Use uploaded gallery images (even if fewer than 6)
+          // The RollingGallery component will handle duplication for smooth rolling
+          const imageUrls = response.data.map(img => img.imageUrl);
+          setGalleryImages(imageUrls);
+        } else {
+          // Use fallback images only if no gallery images are uploaded
+          setGalleryImages(fallbackImages);
+        }
+      } catch (error) {
+        console.error('Failed to load gallery images:', error);
+        setError('Failed to load gallery images');
+        // Fallback to local images
+        setGalleryImages(fallbackImages);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadGalleryImages();
     
-    // Extract images for rolling gallery
-    const images = limitedCars.map(car => {
-      const imageUrl = getCarImageUrl(car.images && car.images.length > 0 ? car.images[0] : null);
-      return imageUrl;
-    });
-    setCarImages(images);
-  }, [cars, getFeaturedCars]);
+    // Refresh gallery images every 30 seconds to catch new uploads
+    const refreshInterval = setInterval(loadGalleryImages, 30000);
+    
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  // Add error handling for images
+  const handleImageError = (e, imageUrl) => {
+    console.warn(`Failed to load image: ${imageUrl}`);
+    e.target.src = '/img/placeholder.svg';
+    e.target.onerror = null; // Prevent infinite loop
+  };
 
   return (
     <section className="full-viewport featured-cars-section">
-      <div className="results-header" style={{ background: "transparent", borderBottom: "none", padding: 0 }}>
-        <h2 className="section-title" style={{ marginBottom: 0 }}>Featured Cars</h2>
-      </div>
-
-      <div className="gallery-container-with-bg" style={{ marginTop: "2rem", position: "relative" }}>
+      <div className="gallery-container-with-bg" style={{ position: "relative" }}>
         {/* Squares Background - Only behind the gallery */}
         <div className="squares-background-gallery">
           <Squares 
@@ -42,45 +76,25 @@ const FeaturedCarsBlock = () => {
           />
         </div>
         
-        {/* Featured Cars Content */}
+        {/* Gallery Content */}
         <div className="gallery-content-overlay">
           {loading ? (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              height: '300px',
-              color: 'white',
-              fontSize: '18px'
-            }}>
-              Loading featured cars...
-            </div>
-          ) : error ? (
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              height: '300px',
-              color: 'white',
-              fontSize: '18px',
-              textAlign: 'center'
-            }}>
-              Error loading featured cars: {error}
+            <div className="gallery-loading">
+              <div className="spinner"></div>
+              <p>Loading gallery...</p>
             </div>
           ) : (
-            <>
-              {/* Rolling Gallery with real car images */}
-              <RollingGallery 
-                autoplay={true} 
-                pauseOnHover={true} 
-                images={carImages}
-              />
-              
-              {/* Detailed Car Cards below the gallery */}
-              <div style={{ marginTop: '3rem' }}>
-                <FocusCarCards cars={featuredCars} />
-              </div>
-            </>
+            <RollingGallery 
+              autoplay={true} 
+              pauseOnHover={true} 
+              images={galleryImages}
+              onImageError={handleImageError}
+            />
+          )}
+          {error && (
+            <div className="gallery-error">
+              <p>Using fallback images</p>
+            </div>
           )}
         </div>
       </div>

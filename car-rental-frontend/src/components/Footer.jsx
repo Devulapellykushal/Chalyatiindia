@@ -1,8 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import navLogo from '../assets/navlogo.png';
 
 const Footer = () => {
+  const location = useLocation();
+  const [logoClickCount, setLogoClickCount] = useState(0);
+  const resetTimeoutRef = useRef(null);
+  
   const whatsappMessage = `Hi! I'm interested in learning more about CHALYATI car rental services.
 
 Could you please provide more details about:
@@ -18,20 +22,92 @@ Thank you!`;
 
   const whatsappUrl = `https://wa.me/918099662446?text=${encodeURIComponent(whatsappMessage)}`;
 
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      // If already on home page, scroll to hero section
+      const heroElement = document.getElementById('hero');
+      if (heroElement) {
+        heroElement.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      // If on different page, navigate to home and then scroll to hero
+      window.location.href = '/';
+    }
+  };
+
+  const handleLogoClick = () => {
+    const newCount = logoClickCount + 1;
+    setLogoClickCount(newCount);
+    
+    // Clear existing timeout
+    if (resetTimeoutRef.current) {
+      clearTimeout(resetTimeoutRef.current);
+    }
+    
+    if (newCount >= 5) {
+      // Reset counter and redirect to admin portal
+      setLogoClickCount(0);
+      window.location.href = '/admin';
+    } else {
+      // Show a subtle visual feedback
+      const logo = document.querySelector('.footer-logo-image');
+      if (logo) {
+        logo.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+          logo.style.transform = 'scale(1)';
+        }, 150);
+      }
+      
+      // Set timeout to reset counter after 10 seconds of inactivity
+      resetTimeoutRef.current = setTimeout(() => {
+        setLogoClickCount(0);
+      }, 10000);
+    }
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-content">
           <div className="footer-section">
             <div className="footer-logo">
-              <img src={navLogo} alt="CHALYATI" className="footer-logo-image" />
+              <img 
+                src={navLogo} 
+                alt="CHALYATI" 
+                className="footer-logo-image" 
+                onClick={handleLogoClick}
+                style={{ cursor: 'pointer' }}
+                title={`Click ${5 - logoClickCount} more times to access admin portal`}
+              />
+              {logoClickCount > 0 && logoClickCount < 5 && (
+                <div className="click-progress">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span 
+                      key={i} 
+                      className={`progress-dot ${i < logoClickCount ? 'active' : ''}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
             <p>Lease or Rent! We have cars for every one. Choose from our extensive fleet of well-maintained vehicles for your travel needs.</p>
           </div>
           
           <div className="footer-section">
             <h3>Quick Links</h3>
-            <Link to="/">Home</Link>
+            <a href="/" onClick={handleHomeClick}>Home</a>
             <Link to="/cars">Browse Cars</Link>
             <a 
               href={whatsappUrl}
@@ -40,7 +116,6 @@ Thank you!`;
             >
               Contact Us
             </a>
-            <Link to="/admin">Admin</Link>
           </div>
           
           <div className="footer-section">

@@ -32,9 +32,11 @@ export const FocusCarCard = React.memo(
           alt={title}
           className="focus-car-image"
           onError={(e) => {
-            console.warn(`Failed to load image for ${title}`);
-            e.target.src = '/img/placeholder.jpg';
+            console.warn(`Failed to load image for ${title}: ${imageUrl}`);
+            e.target.src = '/img/placeholder.svg';
+            e.target.onerror = null; // Prevent infinite loop
           }}
+          loading="lazy"
         />
         
         {/* Overlay with car info */}
@@ -85,7 +87,6 @@ export function FocusCarCards({ cars }) {
   const [hovered, setHovered] = useState(null);
 
   console.log('FocusCarCards received cars:', cars?.length, cars);
-  console.log('FocusCarCards cars array:', cars);
 
   return (
     <div className="focus-cards-grid">

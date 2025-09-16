@@ -19,15 +19,28 @@ export const getCarImageUrl = (imagePath) => {
   
   // For uploaded images, construct full URL
   if (imagePath.startsWith('/uploads/')) {
-    const fullUrl = `https://chalyati.onrender.com${imagePath}`;
+    const fullUrl = `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
     console.log('Uploaded image detected, returning:', fullUrl);
     return fullUrl;
   }
   
   // For relative paths, try to import from assets
   try {
-    // Remove /src/assets/ prefix and get just the filename
-    const filename = imagePath.replace('/src/assets/', '');
+    // Handle different path formats
+    let filename;
+    if (imagePath.startsWith('/src/assets/')) {
+      filename = imagePath.replace('/src/assets/', '');
+    } else if (imagePath.startsWith('src/assets/')) {
+      filename = imagePath.replace('src/assets/', '');
+    } else if (imagePath.startsWith('/assets/')) {
+      filename = imagePath.replace('/assets/', '');
+    } else if (imagePath.startsWith('assets/')) {
+      filename = imagePath.replace('assets/', '');
+    } else {
+      // Assume it's already a filename
+      filename = imagePath;
+    }
+    
     const assetUrl = `/assets/${filename}`;
     console.log('Asset image detected, returning:', assetUrl);
     return assetUrl;

@@ -119,6 +119,11 @@ adminSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
 
   try {
+    // Check if password is already hashed (starts with $2b$)
+    if (this.password.startsWith('$2b$')) {
+      return next(); // Password is already hashed, don't hash again
+    }
+    
     // Hash password with cost of 12
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);

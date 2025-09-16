@@ -82,6 +82,7 @@ Thank you!`;
   return (
     <section 
       ref={heroRef}
+      id="hero"
       className="hero animated-hero" 
       style={{ 
         backgroundImage: `url(${heroImage})`

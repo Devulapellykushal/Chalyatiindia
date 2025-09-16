@@ -33,6 +33,25 @@ const Admin = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
   const [imageInputMode, setImageInputMode] = useState('upload'); // 'upload' or 'url'
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [changePasswordData, setChangePasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
+  const [activeTab, setActiveTab] = useState('cars'); // 'cars' or 'gallery'
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [galleryError, setGalleryError] = useState('');
+  const [showGalleryUpload, setShowGalleryUpload] = useState(false);
+  const [galleryFormData, setGalleryFormData] = useState({
+    title: '',
+    description: '',
+    category: 'gallery',
+    order: 0
+  });
+  const [galleryFile, setGalleryFile] = useState(null);
 
 
 
@@ -153,6 +172,47 @@ const Admin = () => {
       resetForm();
       clearError();
       setSuccessMessage('');
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordChangeMessage('');
+
+    // Validate passwords
+    if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      setPasswordChangeMessage('New passwords do not match');
+      return;
+    }
+
+    if (changePasswordData.newPassword.length < 6) {
+      setPasswordChangeMessage('New password must be at least 6 characters long');
+      return;
+    }
+
+    try {
+      const response = await apiService.changePassword({
+        currentPassword: changePasswordData.currentPassword,
+        newPassword: changePasswordData.newPassword
+      });
+
+      if (response.success) {
+        setPasswordChangeMessage('Password changed successfully!');
+        setChangePasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        setTimeout(() => {
+          setShowChangePasswordModal(false);
+          setPasswordChangeMessage('');
+        }, 2000);
+      } else {
+        setPasswordChangeMessage(response.message || 'Failed to change password');
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+      setPasswordChangeMessage('Failed to change password. Please try again.');
     }
   };
 
@@ -321,7 +381,7 @@ const Admin = () => {
           if (img.startsWith('http')) {
             return img; // Already a full URL
           } else if (img.startsWith('/uploads/')) {
-            return `https://chalyati.onrender.com${img}`; // Add backend URL
+            return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${img}`; // Add backend URL
           } else {
             return img; // Keep as is for other cases
           }
@@ -361,6 +421,102 @@ const Admin = () => {
       }
     }
   };
+
+  // Gallery functions
+  const loadGalleryImages = async () => {
+    setGalleryLoading(true);
+    setGalleryError('');
+    try {
+      const response = await apiService.getAdminGalleryImages();
+      if (response.success) {
+        setGalleryImages(response.data);
+      } else {
+        setGalleryError('Failed to load gallery images');
+      }
+    } catch (error) {
+      console.error('Gallery load error:', error);
+      setGalleryError('Failed to load gallery images');
+    } finally {
+      setGalleryLoading(false);
+    }
+  };
+
+  const handleGalleryUpload = async (e) => {
+    e.preventDefault();
+    if (!galleryFile) {
+      alert('Please select an image file');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', galleryFile);
+    formData.append('title', galleryFormData.title);
+    formData.append('description', galleryFormData.description);
+    formData.append('category', galleryFormData.category);
+    formData.append('order', galleryFormData.order);
+
+    try {
+      const response = await apiService.uploadGalleryImage(formData);
+      if (response.success) {
+        setSuccessMessage('Gallery image uploaded successfully!');
+        setShowGalleryUpload(false);
+        setGalleryFormData({
+          title: '',
+          description: '',
+          category: 'gallery',
+          order: 0
+        });
+        setGalleryFile(null);
+        loadGalleryImages();
+      } else {
+        alert(response.message || 'Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Gallery upload error:', error);
+      alert('Failed to upload image');
+    }
+  };
+
+  const handleGalleryDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this image?')) {
+      return;
+    }
+
+    try {
+      const response = await apiService.deleteGalleryImage(id);
+      if (response.success) {
+        setSuccessMessage('Gallery image deleted successfully!');
+        loadGalleryImages();
+      } else {
+        alert(response.message || 'Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Gallery delete error:', error);
+      alert('Failed to delete image');
+    }
+  };
+
+  const handleGalleryToggleActive = async (id, isActive) => {
+    try {
+      const response = await apiService.updateGalleryImage(id, { isActive: !isActive });
+      if (response.success) {
+        setSuccessMessage(`Gallery image ${!isActive ? 'activated' : 'deactivated'} successfully!`);
+        loadGalleryImages();
+      } else {
+        alert(response.message || 'Failed to update image');
+      }
+    } catch (error) {
+      console.error('Gallery update error:', error);
+      alert('Failed to update image');
+    }
+  };
+
+  // Load gallery images when tab is switched
+  useEffect(() => {
+    if (isLoggedIn && activeTab === 'gallery') {
+      loadGalleryImages();
+    }
+  }, [isLoggedIn, activeTab]);
 
   // Notification components
   const Notification = ({ message, type, onClose }) => (
@@ -436,6 +592,12 @@ const Admin = () => {
         <div className="admin-header-content">
           <img src={navLogo} alt="CHALYATI" className="admin-logo" />
           <div className="admin-header-actions">
+            <button 
+              onClick={() => setShowChangePasswordModal(true)} 
+              className="btn btn-outline"
+            >
+              Change Password
+            </button>
             <button onClick={handleLogout} className="btn btn-secondary">
               Logout
             </button>
@@ -444,9 +606,28 @@ const Admin = () => {
       </div>
 
       <div className="admin-container">
-        {/* Loading State */}
-        {loading && (
-          <div className="loading-overlay">
+        {/* Tab Navigation */}
+        <div className="admin-tabs">
+          <button 
+            className={`tab-button ${activeTab === 'cars' ? 'active' : ''}`}
+            onClick={() => setActiveTab('cars')}
+          >
+            Car Management
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'gallery' ? 'active' : ''}`}
+            onClick={() => setActiveTab('gallery')}
+          >
+            Gallery Management
+          </button>
+        </div>
+
+        {/* Cars Tab Content */}
+        {activeTab === 'cars' && (
+          <>
+            {/* Loading State */}
+            {loading && (
+              <div className="loading-overlay">
             <div className="loading-spinner">
               <div className="spinner"></div>
               <p>Loading cars data...</p>
@@ -846,7 +1027,7 @@ const Admin = () => {
                 ? (firstImage.startsWith('http') 
                     ? firstImage 
                     : firstImage.startsWith('/uploads/') 
-                      ? `https://chalyati.onrender.com${firstImage}`
+                      ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${firstImage}`
                       : firstImage)
                 : '/img/placeholder.svg';
               
@@ -912,7 +1093,373 @@ const Admin = () => {
             </div>
           )}
         </div>
+          </>
+        )}
+
+        {/* Gallery Tab Content */}
+        {activeTab === 'gallery' && (
+          <>
+            {/* Gallery Header */}
+            <div className="gallery-header">
+              <h2>Gallery Management</h2>
+              <button 
+                className="btn btn-primary"
+                onClick={() => setShowGalleryUpload(true)}
+              >
+                Upload New Image
+              </button>
+            </div>
+
+            {/* Gallery Loading */}
+            {galleryLoading && (
+              <div className="loading-overlay">
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading gallery images...</p>
+                </div>
+              </div>
+            )}
+
+            {/* Gallery Error */}
+            {galleryError && (
+              <div className="error-message">
+                {galleryError}
+              </div>
+            )}
+
+            {/* Gallery Images Grid */}
+            <div className="gallery-grid">
+              {galleryImages.map((image) => (
+                <div key={image.id} className="gallery-item-admin">
+                  <div className="gallery-image-container">
+                    <img 
+                      src={image.imageUrl} 
+                      alt={image.title}
+                      className="gallery-image"
+                    />
+                    <div className="gallery-overlay">
+                      <div className="gallery-actions">
+                        <button
+                          className={`btn btn-sm ${image.isActive ? 'btn-warning' : 'btn-success'}`}
+                          onClick={() => handleGalleryToggleActive(image.id, image.isActive)}
+                        >
+                          {image.isActive ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleGalleryDelete(image.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="gallery-info">
+                    <h4>{image.title}</h4>
+                    <p>{image.description}</p>
+                    <div className="gallery-meta">
+                      <span className="badge">{image.category}</span>
+                      <span className="badge">Order: {image.order}</span>
+                      <span className="badge">{image.isActive ? 'Active' : 'Inactive'}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {galleryImages.length === 0 && !galleryLoading && (
+              <div className="no-results">
+                <p>No gallery images found. Upload some images to get started!</p>
+              </div>
+            )}
+
+            {/* Gallery Upload Modal */}
+            {showGalleryUpload && (
+              <div className="gallery-upload-modal-overlay">
+                <div className="gallery-upload-modal">
+                  {/* Modal Header */}
+                  <div className="gallery-upload-modal-header">
+                    <div className="gallery-upload-modal-title">
+                      <div className="gallery-upload-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <h2>Upload New Image</h2>
+                        <p>Add a new image to your gallery collection</p>
+                      </div>
+                    </div>
+                    <button 
+                      className="gallery-upload-modal-close" 
+                      onClick={() => {
+                        setShowGalleryUpload(false);
+                        setGalleryFormData({
+                          title: '',
+                          description: '',
+                          category: 'gallery',
+                          order: 0
+                        });
+                        setGalleryFile(null);
+                      }}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Modal Content */}
+                  <div className="gallery-upload-modal-content">
+                    <form onSubmit={handleGalleryUpload} className="gallery-upload-form">
+                      <div className="gallery-upload-form-grid">
+                        <div className="gallery-upload-form-group">
+                          <label htmlFor="galleryTitle" className="gallery-upload-label">
+                            <span>Image Title</span>
+                            <span className="required">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            id="galleryTitle"
+                            className="gallery-upload-input"
+                            placeholder="Enter a descriptive title for your image"
+                            value={galleryFormData.title}
+                            onChange={(e) => setGalleryFormData(prev => ({
+                              ...prev,
+                              title: e.target.value
+                            }))}
+                            required
+                          />
+                        </div>
+
+                        <div className="gallery-upload-form-group">
+                          <label htmlFor="galleryDescription" className="gallery-upload-label">
+                            Description
+                          </label>
+                          <textarea
+                            id="galleryDescription"
+                            className="gallery-upload-textarea"
+                            placeholder="Add a description for your image (optional)"
+                            rows="3"
+                            value={galleryFormData.description}
+                            onChange={(e) => setGalleryFormData(prev => ({
+                              ...prev,
+                              description: e.target.value
+                            }))}
+                          />
+                        </div>
+
+                        <div className="gallery-upload-form-group">
+                          <label htmlFor="galleryCategory" className="gallery-upload-label">
+                            <span>Category</span>
+                            <span className="required">*</span>
+                          </label>
+                          <select
+                            id="galleryCategory"
+                            className="gallery-upload-select"
+                            value={galleryFormData.category}
+                            onChange={(e) => setGalleryFormData(prev => ({
+                              ...prev,
+                              category: e.target.value
+                            }))}
+                          >
+                            <option value="gallery">Gallery - General images</option>
+                            <option value="featured">Featured - Rolling gallery images</option>
+                            <option value="hero">Hero - Hero section images</option>
+                          </select>
+                        </div>
+
+                        <div className="gallery-upload-form-group">
+                          <label htmlFor="galleryOrder" className="gallery-upload-label">
+                            Display Order
+                          </label>
+                          <input
+                            type="number"
+                            id="galleryOrder"
+                            className="gallery-upload-input"
+                            placeholder="0"
+                            min="0"
+                            value={galleryFormData.order}
+                            onChange={(e) => setGalleryFormData(prev => ({
+                              ...prev,
+                              order: parseInt(e.target.value) || 0
+                            }))}
+                          />
+                        </div>
+
+                        <div className="gallery-upload-form-group gallery-upload-file-group">
+                          <label htmlFor="galleryFile" className="gallery-upload-label">
+                            <span>Image File</span>
+                            <span className="required">*</span>
+                          </label>
+                          <div className="gallery-upload-file-container">
+                            <input
+                              type="file"
+                              id="galleryFile"
+                              className="gallery-upload-file-input"
+                              accept="image/*"
+                              onChange={(e) => setGalleryFile(e.target.files[0])}
+                              required
+                            />
+                            <label htmlFor="galleryFile" className="gallery-upload-file-label">
+                              <div className="gallery-upload-file-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M14.5 4H20.5C21.6 4 22.5 4.9 22.5 6V18C22.5 19.1 21.6 20 20.5 20H4.5C3.4 20 2.5 19.1 2.5 18V6C2.5 4.9 3.4 4 4.5 4H10.5L12.5 6H14.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </div>
+                              <div className="gallery-upload-file-text">
+                                <span className="gallery-upload-file-title">
+                                  {galleryFile ? galleryFile.name : 'Choose an image file'}
+                                </span>
+                                <span className="gallery-upload-file-subtitle">
+                                  {galleryFile ? 'Click to change' : 'PNG, JPG, JPEG up to 5MB'}
+                                </span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="gallery-upload-modal-footer">
+                    <div className="gallery-upload-modal-actions">
+                      <button 
+                        type="button" 
+                        className="gallery-upload-btn gallery-upload-btn-secondary"
+                        onClick={() => {
+                          setShowGalleryUpload(false);
+                          setGalleryFormData({
+                            title: '',
+                            description: '',
+                            category: 'gallery',
+                            order: 0
+                          });
+                          setGalleryFile(null);
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="gallery-upload-btn gallery-upload-btn-primary"
+                        onClick={handleGalleryUpload}
+                        disabled={!galleryFile || !galleryFormData.title}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M17 8L12 3L7 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M12 3V15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Upload Image
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
+
+      {/* Change Password Modal */}
+      {showChangePasswordModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Change Password</h2>
+              <button 
+                className="modal-close" 
+                onClick={() => {
+                  setShowChangePasswordModal(false);
+                  setPasswordChangeMessage('');
+                  setChangePasswordData({
+                    currentPassword: '',
+                    newPassword: '',
+                    confirmPassword: ''
+                  });
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleChangePassword} className="modal-body">
+              <div className="form-group">
+                <label htmlFor="currentPassword">Current Password</label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  value={changePasswordData.currentPassword}
+                  onChange={(e) => setChangePasswordData(prev => ({
+                    ...prev,
+                    currentPassword: e.target.value
+                  }))}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="newPassword">New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  value={changePasswordData.newPassword}
+                  onChange={(e) => setChangePasswordData(prev => ({
+                    ...prev,
+                    newPassword: e.target.value
+                  }))}
+                  required
+                  minLength="6"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm New Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={changePasswordData.confirmPassword}
+                  onChange={(e) => setChangePasswordData(prev => ({
+                    ...prev,
+                    confirmPassword: e.target.value
+                  }))}
+                  required
+                  minLength="6"
+                />
+              </div>
+              {passwordChangeMessage && (
+                <div className={`message ${passwordChangeMessage.includes('successfully') ? 'success' : 'error'}`}>
+                  {passwordChangeMessage}
+                </div>
+              )}
+              <div className="modal-actions">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowChangePasswordModal(false);
+                    setPasswordChangeMessage('');
+                    setChangePasswordData({
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: ''
+                    });
+                  }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import navlogo from '../assets/navlogo.png';
 
 const LoadingPage = () => {
   const [progress, setProgress] = useState(0);
@@ -27,7 +27,7 @@ const LoadingPage = () => {
   return (
     <div className="loading-page">
       <div className="loading-content">
-        <img src={logo} alt="Company Logo" className="loading-logo" />
+        <img src={navlogo} alt="Company Logo" className="loading-logo" />
         <div className="loading-bar-container">
           <div className="loading-bar" style={{ width: `${progress}%` }}></div>
         </div>

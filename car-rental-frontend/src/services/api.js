@@ -1,8 +1,9 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://chalyati.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
+    console.log('API Service initialized with baseURL:', this.baseURL);
     this.token = localStorage.getItem('admin-token');
   }
 
@@ -279,6 +280,50 @@ class ApiService {
     return response;
   }
 
+  async changePassword(passwordData) {
+    return this.request('/admin/change-password', {
+      method: 'POST',
+      body: JSON.stringify(passwordData),
+    });
+  }
+
+  // Gallery API methods
+  async getGalleryImages(category = 'gallery') {
+    return this.request(`/gallery?category=${category}`);
+  }
+
+  async getAdminGalleryImages() {
+    return this.request('/gallery/admin');
+  }
+
+  async uploadGalleryImage(formData) {
+    const response = await fetch(`${this.baseURL}/gallery/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  async updateGalleryImage(id, data) {
+    return this.request(`/gallery/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteGalleryImage(id) {
+    return this.request(`/gallery/${id}`, {
+      method: 'DELETE',
+    });
+  }
 
   // Health check
   async healthCheck() {

@@ -122,6 +122,30 @@ router.post('/login', loginLimiter, async (req, res) => {
       });
     }
 
+          // TEMPORARY BYPASS FOR EMERGENCY ACCESS - COMMENTED OUT TO TEST DB AUTH
+          // if (username === 'chalyatiindia' && password === 'Santosh@2025') {
+      // const token = jwt.sign(
+      //   { 
+      //     adminId: 'emergency-admin',
+      //     username: 'emergency',
+      //     role: 'super_admin'
+      //   },
+      //   config.JWT_SECRET,
+      //   { expiresIn: config.JWT_EXPIRES_IN }
+      // );
+
+      // return res.json({
+      //   success: true,
+      //   message: 'Emergency access granted',
+      //   token: token,
+      //   admin: {
+      //     id: 'emergency-admin',
+      //     username: 'emergency',
+      //     role: 'super_admin'
+      //   }
+      // });
+    // }
+
     // Validate input
     if (username.length < 3 || password.length < 6) {
       return res.status(400).json({
@@ -680,5 +704,69 @@ router.get('/profile', adminLimiter, authenticateAdmin, async (req, res) => {
   }
 });
 
+// Change password endpoint
+router.post('/change-password', adminLimiter, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters long'
+      });
+    }
+
+    // Get admin from token
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication token required'
+      });
+    }
+
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const admin = await Admin.findById(decoded.adminId);
+    
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: 'Admin not found'
+      });
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await admin.comparePassword(currentPassword);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Update password
+    admin.password = newPassword; // Will be hashed by pre-save hook
+    await admin.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to change password'
+    });
+  }
+});
 
 module.exports = router;

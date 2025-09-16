@@ -184,6 +184,7 @@ app.use('/uploads', (req, res, next) => {
 // Routes
 app.use('/api/cars', require('./routes/cars'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/gallery', require('./routes/gallery'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

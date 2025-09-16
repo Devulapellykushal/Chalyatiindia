@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import navlogo from '../assets/navlogo.png';
 import Filters from '../components/Filters.jsx';
 import { FocusCarCards } from '../components/FocusCarCards.js';
 import { useCars } from '../state/CarsContext';
@@ -126,7 +127,7 @@ const Browse = () => {
           <header className="browse-header">
             <div className="browse-title-section">
               <div className="company-logo">
-                <img src="/assets/logo.png" alt="CHALYATI" className="logo-image" />
+                <img src={navlogo} alt="CHALYATI" className="logo-image" />
                 {/* <h1 className="browse-title">CHALYATI</h1> */}
               </div>
               {activeFiltersCount > 0 && (
