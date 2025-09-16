@@ -19,7 +19,7 @@ export const getCarImageUrl = (imagePath) => {
   
   // For uploaded images, construct full URL
   if (imagePath.startsWith('/uploads/')) {
-    const fullUrl = `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${imagePath}`;
+    const fullUrl = `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${imagePath}`;
     console.log('Uploaded image detected, returning:', fullUrl);
     return fullUrl;
   }

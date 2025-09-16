@@ -165,7 +165,7 @@ router.post('/upload', galleryLimiter, authenticateAdmin, upload.single('image')
     }
 
     const imagePath = `/uploads/gallery/${req.file.filename}`;
-    const imageUrl = `${config.BASE_URL || 'http://localhost:5000'}${imagePath}`;
+    const imageUrl = `${config.BASE_URL || 'https://chalyatiindia.onrender.com'}${imagePath}`;
 
     const galleryImage = new Gallery({
       title: title || `Gallery Image ${Date.now()}`,

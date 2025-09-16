@@ -61,7 +61,7 @@ gallerySchema.methods.getFullImageUrl = function() {
   if (this.imageUrl.startsWith('http')) {
     return this.imageUrl;
   }
-  return `${process.env.BASE_URL || 'http://localhost:5000'}${this.imageUrl}`;
+  return `${process.env.BASE_URL || 'https://chalyatiindia.onrender.com'}${this.imageUrl}`;
 };
 
 module.exports = mongoose.model('Gallery', gallerySchema);

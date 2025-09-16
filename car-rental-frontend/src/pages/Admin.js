@@ -381,7 +381,7 @@ const Admin = () => {
           if (img.startsWith('http')) {
             return img; // Already a full URL
           } else if (img.startsWith('/uploads/')) {
-            return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${img}`; // Add backend URL
+            return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${img}`; // Add backend URL
           } else {
             return img; // Keep as is for other cases
           }
@@ -1027,7 +1027,7 @@ const Admin = () => {
                 ? (firstImage.startsWith('http') 
                     ? firstImage 
                     : firstImage.startsWith('/uploads/') 
-                      ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000'}${firstImage}`
+                      ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${firstImage}`
                       : firstImage)
                 : '/img/placeholder.svg';
               
