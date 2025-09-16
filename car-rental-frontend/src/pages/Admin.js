@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import navLogo from '../assets/navlogo.png';
 import apiService from '../services/api';
 import { useCars } from '../state/CarsContext';
+import { processGalleryImageUrl } from '../utils/imageUtils';
 
 const Admin = () => {
   const { cars, addCar, updateCar, deleteCar, loading, error, clearError, refreshCars } = useCars();
@@ -381,7 +382,7 @@ const Admin = () => {
           if (img.startsWith('http')) {
             return img; // Already a full URL
           } else if (img.startsWith('/uploads/')) {
-            return `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${img}`; // Add backend URL
+            return `https://chalyatiindia.onrender.com${img}`; // Add backend URL
           } else {
             return img; // Keep as is for other cases
           }
@@ -1027,7 +1028,7 @@ const Admin = () => {
                 ? (firstImage.startsWith('http') 
                     ? firstImage 
                     : firstImage.startsWith('/uploads/') 
-                      ? `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${firstImage}`
+                      ? `https://chalyatiindia.onrender.com${firstImage}`
                       : firstImage)
                 : '/img/placeholder.svg';
               
@@ -1133,7 +1134,7 @@ const Admin = () => {
                 <div key={image.id} className="gallery-item-admin">
                   <div className="gallery-image-container">
                     <img 
-                      src={image.imageUrl} 
+                      src={processGalleryImageUrl(image.imageUrl)} 
                       alt={image.title}
                       className="gallery-image"
                     />

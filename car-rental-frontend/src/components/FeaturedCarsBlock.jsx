@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiService from "../services/api";
+import { processGalleryImageUrl } from "../utils/imageUtils";
 import RollingGallery from "./RollingGallery";
 import Squares from "./Squares";
 
@@ -16,11 +17,7 @@ const FeaturedCarsBlock = () => {
     '/assets/SELTOS IMAGE.jpeg',
     '/assets/MERCEDES C220D IMAGE.jpeg',
     '/assets/HONDA CITY IMAGE.jpeg',
-    '/assets/BALENO IMAGE.jpeg',
-    '/assets/BREZZA IMAGE.jpeg',
-    '/assets/NEXON IMAGE.jpeg',
-    '/assets/I20 IMAGE.jpeg',
-    '/assets/ALTROZ IMAGE.jpeg'
+    '/assets/BALENO IMAGE.jpeg'
   ];
 
   useEffect(() => {
@@ -31,7 +28,7 @@ const FeaturedCarsBlock = () => {
         if (response.success && response.data.length > 0) {
           // Use uploaded gallery images (even if fewer than 6)
           // The RollingGallery component will handle duplication for smooth rolling
-          const imageUrls = response.data.map(img => img.imageUrl);
+          const imageUrls = response.data.map(img => processGalleryImageUrl(img.imageUrl));
           setGalleryImages(imageUrls);
         } else {
           // Use fallback images only if no gallery images are uploaded

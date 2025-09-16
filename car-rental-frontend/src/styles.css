@@ -7933,7 +7933,39 @@ a:focus-visible {
 }
 
 /* Responsive Design for Comparison Table */
-@media (max-width: 768px) {
+
+/* Large tablets and small desktops (769px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .comparison-section {
+    padding: 70px 20px;
+  }
+  
+  .comparison-section .section-title {
+    font-size: 2.75rem;
+  }
+  
+  .comparison-table-container {
+    max-width: 900px;
+    border-radius: 14px;
+  }
+  
+  .comparison-header > div {
+    padding: 1.25rem 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .feature-cell {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+  
+  .subscription-cell {
+    padding: 0.875rem;
+  }
+}
+
+/* Medium tablets (601px - 768px) */
+@media (max-width: 768px) and (min-width: 601px) {
   .comparison-section {
     padding: 60px 15px;
   }
@@ -8008,41 +8040,128 @@ a:focus-visible {
   }
 }
 
-@media (max-width: 480px) {
+/* Small tablets and large phones (481px - 600px) */
+@media (max-width: 600px) {
   .comparison-section {
-    padding: 40px 10px;
+    padding: 50px 12px;
   }
   
   .comparison-section .section-title {
-    font-size: 1.875rem;
+    font-size: 2rem;
+  }
+  
+  .comparison-section .hero-description {
+    font-size: 0.95rem;
+  }
+  
+  .comparison-table-container {
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .comparison-header {
+    display: none; /* Hide header on mobile for cleaner look */
   }
   
   .comparison-row {
-    padding: 0.75rem;
-    margin-bottom: 0.25rem;
+    display: block;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 0.4rem;
+    background: var(--card);
+    border-radius: 6px;
+    padding: 0.875rem;
+  }
+  
+  .comparison-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
   }
   
   .feature-cell {
+    background: transparent;
+    font-weight: 600;
     font-size: 0.85rem;
-    padding: 0.25rem 0;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.6rem;
   }
   
   .subscription-cell {
-    padding: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    background: transparent;
+    border: none;
   }
   
   .subscription-cell::before {
+    content: "Chalyati Subscription:";
+    color: #4caf50;
+    font-weight: 600;
     font-size: 0.8rem;
   }
   
   .check-icon {
     width: 18px;
     height: 18px;
-    font-size: 10px;
+    font-size: 11px;
   }
   
   .browse-cars-btn {
     padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* Very small phones (320px - 480px) */
+@media (max-width: 480px) {
+  .comparison-section {
+    padding: 35px 8px;
+  }
+  
+  .comparison-section .section-title {
+    font-size: 1.75rem;
+  }
+  
+  .comparison-section .hero-description {
     font-size: 0.9rem;
+  }
+  
+  .comparison-table-container {
+    border-radius: 8px;
+  }
+  
+  .comparison-row {
+    padding: 0.6rem;
+    margin-bottom: 0.2rem;
+    border-radius: 4px;
+  }
+  
+  .feature-cell {
+    font-size: 0.8rem;
+    padding: 0.2rem 0;
+    margin-bottom: 0.4rem;
+  }
+  
+  .subscription-cell {
+    padding: 0.2rem 0;
+  }
+  
+  .subscription-cell::before {
+    font-size: 0.75rem;
+  }
+  
+  .check-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+  
+  .browse-cars-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
   }
 }

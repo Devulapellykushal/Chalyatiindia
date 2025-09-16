@@ -19,7 +19,7 @@ export const getCarImageUrl = (imagePath) => {
   
   // For uploaded images, construct full URL
   if (imagePath.startsWith('/uploads/')) {
-    const fullUrl = `${process.env.REACT_APP_API_URL?.replace('/api', '') || 'https://chalyatiindia.onrender.com'}${imagePath}`;
+    const fullUrl = `https://chalyatiindia.onrender.com${imagePath}`;
     console.log('Uploaded image detected, returning:', fullUrl);
     return fullUrl;
   }
@@ -61,4 +61,40 @@ export const processCarImages = (images) => {
   }
   
   return images.map(getCarImageUrl);
+};
+
+/**
+ * Process gallery image URL - handles both localhost and production URLs
+ * @param {string} imageUrl - The image URL from gallery data
+ * @returns {string} - The processed image URL
+ */
+export const processGalleryImageUrl = (imageUrl) => {
+  console.log('processGalleryImageUrl called with:', imageUrl);
+  
+  if (!imageUrl) {
+    console.log('No image URL, returning placeholder');
+    return '/img/placeholder.svg';
+  }
+  
+  // If it's already a full URL, check if it's localhost and replace
+  if (imageUrl.startsWith('http')) {
+    if (imageUrl.includes('localhost:5000')) {
+      const correctedUrl = imageUrl.replace('http://localhost:5000', 'https://chalyatiindia.onrender.com');
+      console.log('Localhost URL detected, corrected to:', correctedUrl);
+      return correctedUrl;
+    }
+    console.log('Full URL detected, returning as is:', imageUrl);
+    return imageUrl;
+  }
+  
+  // For relative paths, construct full URL
+  if (imageUrl.startsWith('/uploads/')) {
+    const fullUrl = `https://chalyatiindia.onrender.com${imageUrl}`;
+    console.log('Relative upload path detected, returning:', fullUrl);
+    return fullUrl;
+  }
+  
+  // For other cases, return as is
+  console.log('Other path detected, returning as is:', imageUrl);
+  return imageUrl;
 };
