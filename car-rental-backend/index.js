@@ -15,7 +15,7 @@ const config = require('./config');
 const app = express();
 const PORT = config.PORT;
 
-// Security Middleware (optional — enable after debugging)
+// Security Middleware (optional — enable when ready)
 /*
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -30,8 +30,9 @@ app.use(helmet({
 // Logging
 app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// Simplified CORS (no origin config)
+// CORS - no whitelist, accept any origin but still allow credentials
 app.use(cors({
+  origin: true, // Reflects the request origin automatically
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
@@ -97,7 +98,7 @@ const initializeDefaultAdmin = async () => {
 // Initialize admin after database connection
 setTimeout(initializeDefaultAdmin, 2000);
 
-// Serve uploaded images (no origin checks)
+// Serve uploaded images (no CORS restrictions)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
