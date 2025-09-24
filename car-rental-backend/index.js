@@ -64,31 +64,33 @@ const getAllowedOrigins = () => {
 
 // CORS middleware with credentials support
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
+  origin:'*',
+  // origin: function (origin, callback) {
+  //   // Allow requests with no origin (mobile apps, Postman, etc.)
+  //   if (!origin) return callback(null, true);
     
-    const allowedOrigins = getAllowedOrigins();
+  //   const allowedOrigins = getAllowedOrigins();
     
-    // Check exact matches first
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } 
-    // Allow all Vercel deployments
-    else if (origin.includes('.vercel.app')) {
-      console.log(`✅ CORS allowing Vercel deployment: ${origin}`);
-      callback(null, true);
-    }
-    // Allow localhost for development
-    else if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      console.log(`✅ CORS allowing local development: ${origin}`);
-      callback(null, true);
-    }
-    else {
-      console.warn(`🚫 CORS blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  //   // Check exact matches first
+  //   if (allowedOrigins.indexOf(origin) !== -1) {
+  //     callback(null, true);
+  //   } 
+  //   // Allow all Vercel deployments
+  //   else if (origin.includes('.vercel.app')) {
+  //     console.log(`✅ CORS allowing Vercel deployment: ${origin}`);
+  //     callback(null, true);
+  //   }
+  //   // Allow localhost for development
+  //   else if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+  //     console.log(`✅ CORS allowing local development: ${origin}`);
+  //     callback(null, true);
+  //   }
+  //   else {
+  //     console.warn(`🚫 CORS blocked request from origin: ${origin}`);
+  //     callback(new Error('Not allowed by CORS'));
+  //   }
+  // },
+  
   credentials: true,  // Enable credentials (cookies, authorization headers)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
