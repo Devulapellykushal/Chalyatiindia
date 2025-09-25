@@ -30,8 +30,13 @@ app.use(helmet({
 // Logging
 app.use(morgan(config.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-// CORS - no whitelist, accept any origin but still allow credentials
-app.use(cors());
+// CORS - Allow all origins, methods, and headers
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  credentials: false
+}));
 
 // Body parsing with limits
 app.use(express.json({ 
@@ -149,3 +154,7 @@ process.on('SIGTERM', () => {
 });
 
 module.exports = app;
+
+
+
+change this file
